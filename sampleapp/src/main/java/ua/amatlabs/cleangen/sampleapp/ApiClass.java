@@ -12,11 +12,11 @@ import ua.amatlabs.cleangen.library.annotations.MutableField;
 
 @GenerateApiModel
 public class ApiClass {
-    private int intField;
+    int intField;
 
     @MutableField
-    private String stringField;
+    String stringField;
 
     @FieldName("customFieldName")
-    private SparseArray<String> genericField;
+    SparseArray<String> genericField;
 }

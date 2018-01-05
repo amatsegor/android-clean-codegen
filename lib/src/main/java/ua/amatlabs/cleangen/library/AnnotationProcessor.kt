@@ -1,7 +1,8 @@
 package ua.amatlabs.cleangen.library
 
 import ua.amatlabs.cleangen.library.annotations.GenerateApiModel
-import ua.amatlabs.cleangen.library.codegen.JavaCodeGenerator
+import ua.amatlabs.cleangen.library.codegen.JavaConverterGenerator
+import ua.amatlabs.cleangen.library.codegen.JavaModelGenerator
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
@@ -23,14 +24,15 @@ class AnnotationProcessor : AbstractProcessor() {
 
     override fun process(elements: MutableSet<out TypeElement>, env: RoundEnvironment): Boolean {
         val annotatedElements = env.getElementsAnnotatedWith(GenerateApiModel::class.java)
-        val javaCodeGenerator = JavaCodeGenerator(environment)
+        val javaModelGenerator = JavaModelGenerator(environment)
+        val javaConverterGenerator = JavaConverterGenerator(environment)
         ElementFilter.typesIn(annotatedElements)
                 .forEach {
-                    val modelCode = javaCodeGenerator.generateModelCode(it)
+                    val modelCode = javaModelGenerator.generateModelCode(it)
                     println(modelCode)
                     writeModelClassFile(it, modelCode)
 
-                    val converterCode = javaCodeGenerator.generateConverter(it)
+                    val converterCode = javaConverterGenerator.generateConverter(it)
                     writeConverterClassFile(it, converterCode)
                 }
 
@@ -44,9 +46,9 @@ class AnnotationProcessor : AbstractProcessor() {
     }
 
     private fun writeConverterClassFile(element: TypeElement, sourceString: String) {
-        val classPackage = environment.elementUtils.getPackageOf(element).qualifiedName.toString() + ".converter"
+        val classPackage = environment.elementUtils.getPackageOf(element).qualifiedName.toString()
         val className = element.simpleName
-        writeSourceFile(element, "$classPackage.${className}Gen", sourceString)
+        writeSourceFile(element, "$classPackage.${className}Converter", sourceString)
     }
 
     private fun writeSourceFile(element: TypeElement, filename: String, sourceString: String) {
