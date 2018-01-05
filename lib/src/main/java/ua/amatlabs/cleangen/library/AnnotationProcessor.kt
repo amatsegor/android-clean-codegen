@@ -2,11 +2,7 @@ package ua.amatlabs.cleangen.library
 
 import ua.amatlabs.cleangen.library.annotations.GenerateApiModel
 import ua.amatlabs.cleangen.library.codegen.JavaCodeGenerator
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedAnnotationTypes
-import javax.annotation.processing.SupportedSourceVersion
+import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -33,6 +29,9 @@ class AnnotationProcessor : AbstractProcessor() {
                     val modelCode = javaCodeGenerator.generateModelCode(it)
                     println(modelCode)
                     writeModelClassFile(it, modelCode)
+
+                    val converterCode = javaCodeGenerator.generateConverter(it)
+                    writeConverterClassFile(it, converterCode)
                 }
 
         return true

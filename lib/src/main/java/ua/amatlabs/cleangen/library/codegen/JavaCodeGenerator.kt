@@ -75,8 +75,8 @@ class JavaCodeGenerator(private val environment: ProcessingEnvironment) {
         val fieldClass = variableElement.asType()
         var fieldClassString = fieldClass.toString()
 
-        if (fieldClass == TypeKind.DECLARED) {
-            val typeArgs = (fieldClass as DeclaredType).typeArguments
+        if (fieldClass == TypeKind.DECLARED && fieldClass is DeclaredType) {
+            val typeArgs = fieldClass.typeArguments
             fieldClassString = "$fieldClass<${typeArgs[0]}>"
         }
         return fieldClassString
@@ -87,17 +87,24 @@ class JavaCodeGenerator(private val environment: ProcessingEnvironment) {
         val classPackage = environment.elementUtils.getPackageOf(typeElement).toString() + ".converters"
 
         val stringBuilder = StringBuilder()
-        stringBuilder.append(classPackage)
+        stringBuilder.append("package $classPackage;")
                 .append("\n\n")
-                .append("\t$PUBLIC $CLASS $className")
+                .append("$PUBLIC $CLASS $className ")
                 .append("implements ua.amatlabs.cleangen.library.codegen.Converter<")
                 .append(typeElement.qualifiedName).append(", ").append("${typeElement.qualifiedName}Gen")
                 .append("> {").append('\n')
-                .append("\t\t$PUBLIC ${typeElement.qualifiedName}Gen convert(){")
+                .append("\t$PUBLIC ${typeElement.qualifiedName}Gen convert(${typeElement.qualifiedName} object) {")
 
-        TODO("End it!")
+        ElementFilter.fieldsIn(environment.elementUtils.getAllMembers(typeElement))
+                .forEach {
+                    stringBuilder.append("\n\t\t").append("this.${it.simpleName} = object.${it.simpleName};")
+                }
 
-//        stringBuilder.append("\t\t}").append("\t}")
+        stringBuilder.append("\n\t\treturn object;").append('\n')
+                .append("\t}")
+                .append("\n}")
+
+        return stringBuilder.toString()
     }
 
     companion object {
