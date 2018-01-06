@@ -1,11 +1,14 @@
 package ua.amatlabs.cleangen.library.codegen
 
+import ua.amatlabs.cleangen.library.annotations.FieldType
+import ua.amatlabs.cleangen.library.annotations.getConverterName
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.CLASS
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.PRIVATE
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.PUBLIC
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.STATIC
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.TypeElement
+import javax.lang.model.element.VariableElement
 import javax.lang.model.util.ElementFilter
 
 /**
@@ -39,8 +42,15 @@ class JavaConverterGenerator(private val environment: ProcessingEnvironment) {
 
         ElementFilter.fieldsIn(environment.elementUtils.getAllMembers(typeElement))
                 .forEach {
-                    val resultFieldName = Utils.getRealFieldName(it)
-                    stringBuilder.append("\n\t\t").append("result.$resultFieldName = object.${it.simpleName};")
+                    val resultFieldName = Utils.getTargetFieldName(it)
+                    stringBuilder.append("\n\t\t")
+
+                    val fieldConverter = findConverterForField(it)
+                    if (fieldConverter.isEmpty()) {
+                        stringBuilder.append("result.$resultFieldName = object.${it.simpleName};")
+                    } else {
+                        stringBuilder.append("result.$resultFieldName = new $fieldConverter().convert(object.${it.simpleName});")
+                    }
                 }
 
         stringBuilder.append("\n\t\t")
@@ -51,5 +61,12 @@ class JavaConverterGenerator(private val environment: ProcessingEnvironment) {
 
     private fun getClassPackage(typeElement: TypeElement) = environment.elementUtils.getPackageOf(typeElement).toString()
 
-    private fun getClassName(typeElement: TypeElement) = "${typeElement.simpleName} Converter"
+    private fun getClassName(typeElement: TypeElement) = "${typeElement.simpleName}Converter"
+
+    private fun findConverterForField(variableElement: VariableElement): String {
+        val fieldTypeAnnotation = variableElement.getAnnotation(FieldType::class.java) ?: return ""
+
+        val converterClassName = getConverterName(fieldTypeAnnotation, environment.typeUtils)
+        return converterClassName ?: ""
+    }
 }

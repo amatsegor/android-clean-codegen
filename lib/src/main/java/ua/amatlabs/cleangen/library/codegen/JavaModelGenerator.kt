@@ -32,9 +32,9 @@ class JavaModelGenerator(private val environment: ProcessingEnvironment) {
         classFields
                 .filter { it.getAnnotation(Skip::class.java) == null }
                 .forEach {
-                    val fieldName = Utils.getRealFieldName(it)
-                    stringBuilder.append('\t').append(generateFieldString(it, fieldName)).append('\n')
-                    stringBuilder.append(generateFieldAccessors(it, fieldName))
+                    val fieldName = Utils.getTargetFieldName(it)
+                    stringBuilder.append('\t').append(generateFieldString(it, fieldName))
+                            .append('\n').append(generateFieldAccessors(it, fieldName))
                 }
 
         stringBuilder.append("}")
@@ -43,12 +43,12 @@ class JavaModelGenerator(private val environment: ProcessingEnvironment) {
     }
 
     private fun generateFieldString(variableElement: VariableElement, fieldName: CharSequence): String {
-        val fieldClass = Utils.getFullFieldType(variableElement)
+        val fieldClass = Utils.getTargetFieldType(variableElement, environment.typeUtils)
         return "$fieldClass $fieldName;"
     }
 
     private fun generateFieldAccessors(variableElement: VariableElement, fieldName: CharSequence): String {
-        val fieldClass = Utils.getFullFieldType(variableElement)
+        val fieldClass = Utils.getTargetFieldType(variableElement, environment.typeUtils)
 
         val stringBuilder = StringBuilder()
         stringBuilder.append("\t$PUBLIC $fieldClass get${fieldName.toString().capitalize()}() {").append('\n')
