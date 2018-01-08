@@ -2,6 +2,7 @@ package ua.amatlabs.cleangen.library.codegen
 
 import ua.amatlabs.cleangen.library.annotations.MutableField
 import ua.amatlabs.cleangen.library.annotations.Skip
+import ua.amatlabs.cleangen.library.annotations.getTargetClassSimpleName
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.CLASS
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.PACKAGE
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.PUBLIC
@@ -22,7 +23,7 @@ class JavaModelGenerator(private val environment: ProcessingEnvironment) {
         val stringBuilder = StringBuilder(PACKAGE).append(" ").append(classPackage)
         stringBuilder.append(";").append("\n\n")
 
-        val className = "${element.simpleName}Gen"
+        val className = getTargetClassSimpleName(element)
 
         stringBuilder.append("$PUBLIC $CLASS $className {").append('\n')
 

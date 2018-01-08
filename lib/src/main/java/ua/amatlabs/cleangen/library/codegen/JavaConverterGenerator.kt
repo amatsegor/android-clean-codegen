@@ -1,7 +1,10 @@
 package ua.amatlabs.cleangen.library.codegen
 
 import ua.amatlabs.cleangen.library.annotations.FieldType
+import ua.amatlabs.cleangen.library.annotations.Skip
 import ua.amatlabs.cleangen.library.annotations.getConverterName
+import ua.amatlabs.cleangen.library.annotations.getTargetClassQualifiedName
+import ua.amatlabs.cleangen.library.annotations.getTargetClassSimpleName
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.CLASS
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.PRIVATE
 import ua.amatlabs.cleangen.library.codegen.JavaTokens.PUBLIC
@@ -35,12 +38,14 @@ class JavaConverterGenerator(private val environment: ProcessingEnvironment) {
     private fun generatePrivateConstructor(typeElement: TypeElement) = "$PRIVATE ${getClassName(typeElement)}(){}"
 
     private fun generateConvertMethod(typeElement: TypeElement): String {
+        val className = getTargetClassQualifiedName(typeElement, environment)
         val stringBuilder = StringBuilder()
-                .append("\t$PUBLIC $STATIC ${typeElement.qualifiedName}Gen convert(${typeElement.qualifiedName} object) {")
+                .append("\t$PUBLIC $STATIC $className convert(${typeElement.qualifiedName} object) {")
                 .append("\n\t\t")
-                .append("${typeElement.qualifiedName}Gen result = new ${typeElement.qualifiedName}Gen();")
+                .append("$className result = new $className();")
 
         ElementFilter.fieldsIn(environment.elementUtils.getAllMembers(typeElement))
+                .filter { it.getAnnotation(Skip::class.java) == null }
                 .forEach {
                     val resultFieldName = Utils.getTargetFieldName(it)
                     stringBuilder.append("\n\t\t")
@@ -61,7 +66,7 @@ class JavaConverterGenerator(private val environment: ProcessingEnvironment) {
 
     private fun getClassPackage(typeElement: TypeElement) = environment.elementUtils.getPackageOf(typeElement).toString()
 
-    private fun getClassName(typeElement: TypeElement) = "${typeElement.simpleName}Converter"
+    private fun getClassName(typeElement: TypeElement) = "${getTargetClassSimpleName(typeElement)}Converter"
 
     private fun findConverterForField(variableElement: VariableElement): String {
         val fieldTypeAnnotation = variableElement.getAnnotation(FieldType::class.java) ?: return ""

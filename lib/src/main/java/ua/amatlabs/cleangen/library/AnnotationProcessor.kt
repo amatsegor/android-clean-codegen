@@ -1,9 +1,15 @@
 package ua.amatlabs.cleangen.library
 
 import ua.amatlabs.cleangen.library.annotations.GenerateApiModel
+import ua.amatlabs.cleangen.library.annotations.getTargetClassQualifiedName
+import ua.amatlabs.cleangen.library.annotations.getTargetClassSimpleName
 import ua.amatlabs.cleangen.library.codegen.JavaConverterGenerator
 import ua.amatlabs.cleangen.library.codegen.JavaModelGenerator
-import javax.annotation.processing.*
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.ProcessingEnvironment
+import javax.annotation.processing.RoundEnvironment
+import javax.annotation.processing.SupportedAnnotationTypes
+import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
@@ -17,19 +23,19 @@ class AnnotationProcessor : AbstractProcessor() {
 
     private lateinit var environment: ProcessingEnvironment
 
-    override fun init(p0: ProcessingEnvironment) {
-        super.init(p0)
-        environment = p0
+    override fun init(processingEnvironment: ProcessingEnvironment) {
+        super.init(processingEnvironment)
+        environment = processingEnvironment
     }
 
     override fun process(elements: MutableSet<out TypeElement>, env: RoundEnvironment): Boolean {
         val annotatedElements = env.getElementsAnnotatedWith(GenerateApiModel::class.java)
+
         val javaModelGenerator = JavaModelGenerator(environment)
         val javaConverterGenerator = JavaConverterGenerator(environment)
         ElementFilter.typesIn(annotatedElements)
                 .forEach {
                     val modelCode = javaModelGenerator.generateModelCode(it)
-                    println(modelCode)
                     writeModelClassFile(it, modelCode)
 
                     val converterCode = javaConverterGenerator.generateConverter(it)
@@ -40,15 +46,15 @@ class AnnotationProcessor : AbstractProcessor() {
     }
 
     private fun writeModelClassFile(element: TypeElement, sourceString: String) {
-        val classPackage = environment.elementUtils.getPackageOf(element).qualifiedName.toString() + ".model"
-        val className = element.simpleName
-        writeSourceFile(element, "$classPackage.${className}Gen", sourceString)
+        val classPackage = "${environment.elementUtils.getPackageOf(element).qualifiedName}.model"
+
+        val className = getTargetClassSimpleName(element)
+        writeSourceFile(element, "$classPackage.$className", sourceString)
     }
 
     private fun writeConverterClassFile(element: TypeElement, sourceString: String) {
-        val classPackage = environment.elementUtils.getPackageOf(element).qualifiedName.toString()
-        val className = element.simpleName
-        writeSourceFile(element, "$classPackage.${className}Converter", sourceString)
+        val className = getTargetClassQualifiedName(element,environment)
+        writeSourceFile(element, "${className}Converter", sourceString)
     }
 
     private fun writeSourceFile(element: TypeElement, filename: String, sourceString: String) {
