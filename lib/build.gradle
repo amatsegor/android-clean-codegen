@@ -1,4 +1,4 @@
-group = "com.github.amatsegor.android-clean-codegen"
+group = "com.github.amatsegor"
 
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
