@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CleanCodegen.iml" filepath="$PROJECT_DIR$/CleanCodegen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-clean-codegen.iml" filepath="$PROJECT_DIR$/android-clean-codegen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/android-clean-codegen-lib.iml" filepath="$PROJECT_DIR$/lib/android-clean-codegen-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sampleapp/android-clean-codegen-sampleapp.iml" filepath="$PROJECT_DIR$/sampleapp/android-clean-codegen-sampleapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/sampleapp/sampleapp.iml" filepath="$PROJECT_DIR$/sampleapp/sampleapp.iml" />
     </modules>
