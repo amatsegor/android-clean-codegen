@@ -1,10 +1,10 @@
-package ua.amatlabs.cleangen.library
+package ua.amatsehor.cleangen.processor
 
 import ua.amatlabs.cleangen.library.annotations.GenerateApiModel
 import ua.amatlabs.cleangen.library.annotations.getTargetClassQualifiedName
 import ua.amatlabs.cleangen.library.annotations.getTargetClassSimpleName
-import ua.amatlabs.cleangen.library.codegen.JavaConverterGenerator
-import ua.amatlabs.cleangen.library.codegen.JavaModelGenerator
+import ua.amatsehor.cleangen.processor.codegen.JavaConverterGenerator
+import ua.amatsehor.cleangen.processor.codegen.JavaModelGenerator
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -31,8 +31,10 @@ class AnnotationProcessor : AbstractProcessor() {
     override fun process(elements: MutableSet<out TypeElement>, env: RoundEnvironment): Boolean {
         val annotatedElements = env.getElementsAnnotatedWith(GenerateApiModel::class.java)
 
-        val javaModelGenerator = JavaModelGenerator(environment)
-        val javaConverterGenerator = JavaConverterGenerator(environment)
+        val javaModelGenerator =
+            JavaModelGenerator(environment)
+        val javaConverterGenerator =
+            JavaConverterGenerator(environment)
         ElementFilter.typesIn(annotatedElements)
                 .forEach {
                     val modelCode = javaModelGenerator.generateModelCode(it)

@@ -1,14 +1,14 @@
-package ua.amatlabs.cleangen.library.codegen
+package ua.amatsehor.cleangen.processor.codegen
 
 import ua.amatlabs.cleangen.library.annotations.FieldType
 import ua.amatlabs.cleangen.library.annotations.Skip
 import ua.amatlabs.cleangen.library.annotations.getConverterName
 import ua.amatlabs.cleangen.library.annotations.getTargetClassQualifiedName
 import ua.amatlabs.cleangen.library.annotations.getTargetClassSimpleName
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.CLASS
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.PRIVATE
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.PUBLIC
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.STATIC
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.CLASS
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.PRIVATE
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.PUBLIC
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.STATIC
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -47,7 +47,8 @@ class JavaConverterGenerator(private val environment: ProcessingEnvironment) {
         ElementFilter.fieldsIn(environment.elementUtils.getAllMembers(typeElement))
                 .filter { it.getAnnotation(Skip::class.java) == null }
                 .forEach {
-                    val resultFieldName = Utils.getTargetFieldName(it)
+                    val resultFieldName =
+                        Utils.getTargetFieldName(it)
                     stringBuilder.append("\n\t\t")
 
                     val fieldConverter = findConverterForField(it)

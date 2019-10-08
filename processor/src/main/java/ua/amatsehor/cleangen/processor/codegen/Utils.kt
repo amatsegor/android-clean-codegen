@@ -1,4 +1,4 @@
-package ua.amatlabs.cleangen.library.codegen
+package ua.amatsehor.cleangen.processor.codegen
 
 import ua.amatlabs.cleangen.library.annotations.FieldName
 import ua.amatlabs.cleangen.library.annotations.FieldType
@@ -34,7 +34,9 @@ object Utils {
     fun getTargetFieldType(variableElement: VariableElement, typeUtils: Types): String {
         val fieldTypeAnnotation = variableElement.getAnnotation(FieldType::class.java)
         val annotationName = getTypeName(fieldTypeAnnotation, typeUtils)
-        return annotationName ?: getFullFieldType(variableElement)
+        return annotationName ?: getFullFieldType(
+            variableElement
+        )
     }
 
 }

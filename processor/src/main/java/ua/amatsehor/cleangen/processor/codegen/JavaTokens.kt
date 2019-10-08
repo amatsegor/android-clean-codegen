@@ -1,4 +1,4 @@
-package ua.amatlabs.cleangen.library.codegen
+package ua.amatsehor.cleangen.processor.codegen
 
 /**
  * Created by amatsegor on 1/5/18.

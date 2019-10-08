@@ -1,11 +1,11 @@
-package ua.amatlabs.cleangen.library.codegen
+package ua.amatsehor.cleangen.processor.codegen
 
 import ua.amatlabs.cleangen.library.annotations.MutableField
 import ua.amatlabs.cleangen.library.annotations.Skip
 import ua.amatlabs.cleangen.library.annotations.getTargetClassSimpleName
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.CLASS
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.PACKAGE
-import ua.amatlabs.cleangen.library.codegen.JavaTokens.PUBLIC
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.CLASS
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.PACKAGE
+import ua.amatsehor.cleangen.processor.codegen.JavaTokens.PUBLIC
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -33,7 +33,8 @@ class JavaModelGenerator(private val environment: ProcessingEnvironment) {
         classFields
                 .filter { it.getAnnotation(Skip::class.java) == null }
                 .forEach {
-                    val fieldName = Utils.getTargetFieldName(it)
+                    val fieldName =
+                        Utils.getTargetFieldName(it)
                     stringBuilder.append('\t').append(generateFieldString(it, fieldName))
                             .append('\n').append(generateFieldAccessors(it, fieldName))
                 }
@@ -44,12 +45,18 @@ class JavaModelGenerator(private val environment: ProcessingEnvironment) {
     }
 
     private fun generateFieldString(variableElement: VariableElement, fieldName: CharSequence): String {
-        val fieldClass = Utils.getTargetFieldType(variableElement, environment.typeUtils)
+        val fieldClass = Utils.getTargetFieldType(
+            variableElement,
+            environment.typeUtils
+        )
         return "$fieldClass $fieldName;"
     }
 
     private fun generateFieldAccessors(variableElement: VariableElement, fieldName: CharSequence): String {
-        val fieldClass = Utils.getTargetFieldType(variableElement, environment.typeUtils)
+        val fieldClass = Utils.getTargetFieldType(
+            variableElement,
+            environment.typeUtils
+        )
 
         val stringBuilder = StringBuilder()
         stringBuilder.append("\t$PUBLIC $fieldClass get${fieldName.toString().capitalize()}() {").append('\n')
